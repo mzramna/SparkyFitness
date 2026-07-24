@@ -209,6 +209,46 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
                   iconColor={catPink}
                 />
               )}
+              {isConnected && (
+                <SettingsRow
+                  icon="medkit"
+                  title="Medications"
+                  onPress={() => navigation.navigate('Medications')}
+                  iconColor={catOrange}
+                />
+              )}
+              {isConnected && (
+                <SettingsRow
+                  icon="trophy"
+                  title="Goals"
+                  onPress={() => navigation.navigate('Goals')}
+                  iconColor={catCalories}
+                />
+              )}
+              {isConnected && (
+                <SettingsRow
+                  icon="bar-chart"
+                  title="Reports"
+                  onPress={() => navigation.navigate('Reports')}
+                  iconColor={catTeal}
+                />
+              )}
+              {isConnected && (
+                <SettingsRow
+                  icon="checkmark-circle"
+                  title="Check-In"
+                  onPress={() => navigation.navigate('CheckIn')}
+                  iconColor={macroGreen}
+                />
+              )}
+              {isConnected && (
+                <SettingsRow
+                  icon="link"
+                  title="Integrations"
+                  onPress={() => navigation.navigate('Integrations')}
+                  iconColor={catViolet}
+                />
+              )}
               <SettingsRow
                 icon="app-settings"
                 title="App Settings"

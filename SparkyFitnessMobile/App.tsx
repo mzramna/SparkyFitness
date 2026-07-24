@@ -75,6 +75,10 @@ import CycleHubScreen from './src/screens/CycleHubScreen';
 import PregnancySetupScreen from './src/screens/PregnancySetupScreen';
 import MedicationsScreen from './src/screens/MedicationsScreen';
 import AddMedicationScreen from './src/screens/AddMedicationScreen';
+import ReportsScreen from './src/screens/ReportsScreen';
+import CheckInScreen from './src/screens/CheckInScreen';
+import GoalsScreen from './src/screens/GoalsScreen';
+import IntegrationsScreen from './src/screens/IntegrationsScreen';
 import DailyNutritionDetailsScreen from './src/screens/DailyNutritionDetailsScreen';
 import NutrientTrendsScreen from './src/screens/NutrientTrendsScreen';
 import ReauthModal from './src/components/ReauthModal';
@@ -241,6 +245,10 @@ const SafePregnancySetup = withErrorBoundary(PregnancySetupScreen, 'PregnancySet
 
 const SafeMedications = withErrorBoundary(MedicationsScreen, 'Medications', { canGoBack: true });
 const SafeAddMedication = withErrorBoundary(AddMedicationScreen, 'AddMedication', { canGoBack: true });
+const SafeReports = withErrorBoundary(ReportsScreen, 'Reports', { canGoBack: true });
+const SafeCheckIn = withErrorBoundary(CheckInScreen, 'CheckIn', { canGoBack: true });
+const SafeGoals = withErrorBoundary(GoalsScreen, 'Goals', { canGoBack: true });
+const SafeIntegrations = withErrorBoundary(IntegrationsScreen, 'Integrations', { canGoBack: true });
 
 function AppContent() {
   const { theme } = useUniwind();
@@ -1215,6 +1223,38 @@ function AppContent() {
           <Stack.Screen
             name="AddMedication"
             component={SafeAddMedication}
+            options={{
+              headerShown: false,
+              gestureEnabled: true,
+            }}
+          />
+          <Stack.Screen
+            name="Reports"
+            component={SafeReports}
+            options={{
+              headerShown: false,
+              gestureEnabled: true,
+            }}
+          />
+          <Stack.Screen
+            name="CheckIn"
+            component={SafeCheckIn}
+            options={{
+              headerShown: false,
+              gestureEnabled: true,
+            }}
+          />
+          <Stack.Screen
+            name="Goals"
+            component={SafeGoals}
+            options={{
+              headerShown: false,
+              gestureEnabled: true,
+            }}
+          />
+          <Stack.Screen
+            name="Integrations"
+            component={SafeIntegrations}
             options={{
               headerShown: false,
               gestureEnabled: true,

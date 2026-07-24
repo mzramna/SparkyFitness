@@ -41,6 +41,10 @@ export type RootStackParamList = {
   Medications: undefined;
   AddMedication: { editMed?: import('./medications').Medication } | undefined;
   MedicationDetail: { medicationId: string };
+  Reports: undefined;
+  CheckIn: undefined;
+  Goals: undefined;
+  Integrations: undefined;
   FoodsLibrary: undefined;
   MealsLibrary: undefined;
   ExercisesLibrary: undefined;
