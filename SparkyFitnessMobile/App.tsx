@@ -73,6 +73,8 @@ import CycleSettingsScreen from './src/screens/CycleSettingsScreen';
 import CycleOnboardingScreen from './src/screens/CycleOnboardingScreen';
 import CycleHubScreen from './src/screens/CycleHubScreen';
 import PregnancySetupScreen from './src/screens/PregnancySetupScreen';
+import MedicationsScreen from './src/screens/MedicationsScreen';
+import AddMedicationScreen from './src/screens/AddMedicationScreen';
 import DailyNutritionDetailsScreen from './src/screens/DailyNutritionDetailsScreen';
 import NutrientTrendsScreen from './src/screens/NutrientTrendsScreen';
 import ReauthModal from './src/components/ReauthModal';
@@ -236,6 +238,9 @@ const SafeCycleSettings = withErrorBoundary(CycleSettingsScreen, 'CycleSettings'
 const SafeCycleOnboarding = withErrorBoundary(CycleOnboardingScreen, 'CycleOnboarding', { canGoBack: true });
 const SafeCycleHub = withErrorBoundary(CycleHubScreen, 'CycleHub', { canGoBack: true });
 const SafePregnancySetup = withErrorBoundary(PregnancySetupScreen, 'PregnancySetup', { canGoBack: true });
+
+const SafeMedications = withErrorBoundary(MedicationsScreen, 'Medications', { canGoBack: true });
+const SafeAddMedication = withErrorBoundary(AddMedicationScreen, 'AddMedication', { canGoBack: true });
 
 function AppContent() {
   const { theme } = useUniwind();
@@ -1198,6 +1203,22 @@ function AppContent() {
               headerBackButtonDisplayMode: 'minimal',
               ...(Platform.OS === 'android' ? androidModalAnimation : {}),
             })}
+          />
+          <Stack.Screen
+            name="Medications"
+            component={SafeMedications}
+            options={{
+              headerShown: false,
+              gestureEnabled: true,
+            }}
+          />
+          <Stack.Screen
+            name="AddMedication"
+            component={SafeAddMedication}
+            options={{
+              headerShown: false,
+              gestureEnabled: true,
+            }}
           />
         </Stack.Navigator>
         <AddSheet ref={addSheetRef} onAddFood={handleAddFood} onStartWorkout={handleStartWorkout} onAddActivity={handleAddActivity} onLogWorkout={handleLogWorkout} onSyncHealthData={handleSyncHealthData} onBarcodeScan={handleBarcodeScan} onAddMeasurements={handleAddMeasurements} onAskSparky={handleAskSparky} onOpenCycle={handleOpenCycle} showCycleCard={cycleEnabled} cycleLabel={cycleSheetLabel} onDismissWithoutAction={handleAddSheetDismissWithoutAction} />

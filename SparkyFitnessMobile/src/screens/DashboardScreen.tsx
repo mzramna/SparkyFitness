@@ -37,6 +37,7 @@ import ExerciseProgressCard from '../components/ExerciseProgressCard';
 import StatusView from '../components/StatusView';
 import FastingCard from '../components/FastingCard';
 import FastingGoalReconciler from '../components/FastingGoalReconciler';
+import MedicationsCard from '../components/MedicationsCard';
 import { useActiveWorkoutBarPadding } from '../components/ActiveWorkoutBar';
 import { useAppPreferencesStore } from '../stores/appPreferencesStore';
 import type { CompositeScreenProps } from '@react-navigation/native';
@@ -165,6 +166,7 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
   const activeWorkoutBarPadding = useActiveWorkoutBarPadding();
   const fastingCardVisible = useAppPreferencesStore((s) => s.fastingCardVisible);
   const hydrationCardVisible = useAppPreferencesStore((s) => s.hydrationCardVisible);
+  const medicationsCardVisible = useAppPreferencesStore((s) => s.medicationsCardVisible);
   const askSparkyVisible = useAppPreferencesStore((s) => s.askSparkyVisible);
 
   useLayoutEffect(() => {
@@ -430,6 +432,7 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
             Dashboard Settings. */}
         <FastingGoalReconciler />
         {fastingCardVisible && <FastingCard navigation={navigation} />}
+        {medicationsCardVisible && <MedicationsCard navigation={navigation} />}
 
         <Text className="text-text-primary text-xl font-bold mb-2">Health Trends</Text>
         <SegmentedControl segments={RANGE_SEGMENTS} activeKey={stepsRange} onSelect={setStepsRange} />
