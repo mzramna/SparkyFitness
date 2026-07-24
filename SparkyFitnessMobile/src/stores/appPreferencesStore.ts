@@ -16,6 +16,7 @@ const LEGACY_KEYS = {
   notificationsEnabled: '@HealthConnect:notificationsEnabled',
   hydrationCardVisible: '@HealthConnect:hydrationCardVisible',
   fastingCardVisible: '@HealthConnect:fastingCardVisible',
+  medicationsCardVisible: '@HealthConnect:medicationsCardVisible',
   askSparkyVisible: '@HealthConnect:askSparkyVisible',
   liquidGlassTabBarEnabled: '@HealthConnect:liquidGlassTabBarEnabled',
 } as const;
@@ -31,6 +32,7 @@ export const PREFERENCE_DEFAULTS = {
   notificationsEnabled: true,
   hydrationCardVisible: true,
   fastingCardVisible: true,
+  medicationsCardVisible: true,
   askSparkyVisible: true,
   liquidGlassTabBarEnabled: false,
   activeWorkoutMetricColumn: 'rpe' as ActiveWorkoutMetricColumn,
@@ -44,6 +46,7 @@ export type AppPreferencesData = {
   notificationsEnabled: boolean;
   hydrationCardVisible: boolean;
   fastingCardVisible: boolean;
+  medicationsCardVisible: boolean;
   askSparkyVisible: boolean;
   liquidGlassTabBarEnabled: boolean;
   activeWorkoutMetricColumn: ActiveWorkoutMetricColumn;
@@ -57,6 +60,7 @@ export interface AppPreferencesState extends AppPreferencesData {
   setNotificationsEnabled: (value: boolean) => void;
   setHydrationCardVisible: (value: boolean) => void;
   setFastingCardVisible: (value: boolean) => void;
+  setMedicationsCardVisible: (value: boolean) => void;
   setAskSparkyVisible: (value: boolean) => void;
   setLiquidGlassTabBarEnabled: (value: boolean) => void;
   setActiveWorkoutMetricColumn: (value: ActiveWorkoutMetricColumn) => void;
@@ -110,6 +114,7 @@ export const useAppPreferencesStore = create<AppPreferencesState>()(
       setNotificationsEnabled: (value) => set({ notificationsEnabled: value }),
       setHydrationCardVisible: (value) => set({ hydrationCardVisible: value }),
       setFastingCardVisible: (value) => set({ fastingCardVisible: value }),
+      setMedicationsCardVisible: (value) => set({ medicationsCardVisible: value }),
       setAskSparkyVisible: (value) => set({ askSparkyVisible: value }),
       setLiquidGlassTabBarEnabled: (value) => set({ liquidGlassTabBarEnabled: value }),
       setActiveWorkoutMetricColumn: (value) => set({ activeWorkoutMetricColumn: value }),
@@ -126,6 +131,7 @@ export const useAppPreferencesStore = create<AppPreferencesState>()(
         notificationsEnabled: state.notificationsEnabled,
         hydrationCardVisible: state.hydrationCardVisible,
         fastingCardVisible: state.fastingCardVisible,
+        medicationsCardVisible: state.medicationsCardVisible,
         askSparkyVisible: state.askSparkyVisible,
         liquidGlassTabBarEnabled: state.liquidGlassTabBarEnabled,
         // Older persisted blobs without this key backfill via the default

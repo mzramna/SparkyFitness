@@ -38,6 +38,13 @@ export type RootStackParamList = {
   CycleOnboarding: undefined;
   CycleHub: { initialTab?: 'today' | 'insights' | 'care' } | undefined;
   PregnancySetup: { pregnancy?: SharedPregnancy } | undefined;
+  Medications: undefined;
+  AddMedication: { editMed?: import('./medications').Medication } | undefined;
+  MedicationDetail: { medicationId: string };
+  Reports: undefined;
+  CheckIn: undefined;
+  Goals: undefined;
+  Integrations: undefined;
   FoodsLibrary: undefined;
   MealsLibrary: undefined;
   ExercisesLibrary: undefined;
