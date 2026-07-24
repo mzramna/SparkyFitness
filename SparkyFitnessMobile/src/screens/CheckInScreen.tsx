@@ -107,6 +107,12 @@ const CheckInScreen: React.FC<Props> = ({ navigation }) => {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [notes, setNotes] = useState('');
 
+  // Sleep state
+  const [sleepBedTime, setSleepBedTime] = useState('');
+  const [sleepWakeTime, setSleepWakeTime] = useState('');
+  const [sleepQuality, setSleepQuality] = useState<number | null>(null);
+  const [sleepNotes, setSleepNotes] = useState('');
+
   // Fetch existing measurements for the date
   const { isLoading: loadingMeasurements } = useQuery({
     queryKey: ['checkin-measurements', selectedDate],
@@ -399,6 +405,97 @@ const CheckInScreen: React.FC<Props> = ({ navigation }) => {
               <Text className="text-white font-semibold text-sm">Log Mood</Text>
             )}
           </Button>
+        </FormSection>
+
+        {/* Sleep */}
+        <FormSection title="Sleep" iconName="moon">
+          <View className="gap-3">
+            <View className="flex-row gap-3">
+              <View className="flex-1">
+                <Text className="text-xs text-text-muted mb-1">Bedtime</Text>
+                <TextInput
+                  value={sleepBedTime}
+                  onChangeText={setSleepBedTime}
+                  placeholder="22:30"
+                  placeholderTextColor="var(--color-text-muted)"
+                  className="bg-background rounded-lg px-3 py-2.5 text-text-primary text-sm"
+                />
+              </View>
+              <View className="flex-1">
+                <Text className="text-xs text-text-muted mb-1">Wake Time</Text>
+                <TextInput
+                  value={sleepWakeTime}
+                  onChangeText={setSleepWakeTime}
+                  placeholder="06:30"
+                  placeholderTextColor="var(--color-text-muted)"
+                  className="bg-background rounded-lg px-3 py-2.5 text-text-primary text-sm"
+                />
+              </View>
+            </View>
+
+            {/* Sleep Quality */}
+            <View>
+              <Text className="text-xs text-text-muted mb-2">Sleep Quality</Text>
+              <View className="flex-row justify-between">
+                {[1, 2, 3, 4, 5].map((q) => (
+                  <Pressable
+                    key={q}
+                    onPress={() => setSleepQuality(q)}
+                    className={`w-12 h-12 rounded-xl items-center justify-center ${
+                      sleepQuality === q ? 'bg-indigo-500' : 'bg-background'
+                    }`}
+                  >
+                    <Text
+                      className={`text-lg font-bold ${
+                        sleepQuality === q ? 'text-white' : 'text-text-muted'
+                      }`}
+                    >
+                      {q}
+                    </Text>
+                  </Pressable>
+                ))}
+              </View>
+              <View className="flex-row justify-between mt-1">
+                <Text className="text-[9px] text-text-muted">Poor</Text>
+                <Text className="text-[9px] text-text-muted">Fair</Text>
+                <Text className="text-[9px] text-text-muted">Good</Text>
+                <Text className="text-[9px] text-text-muted">Great</Text>
+                <Text className="text-[9px] text-text-muted">Perfect</Text>
+              </View>
+            </View>
+
+            {/* Sleep duration display */}
+            {sleepBedTime && sleepWakeTime && (
+              <View className="bg-indigo-500/10 rounded-lg p-3 flex-row items-center gap-2">
+                <Icon name="moon" size={16} color="#6366F1" />
+                <Text className="text-xs text-indigo-600 font-semibold">
+                  {(() => {
+                    try {
+                      const [bh, bm] = sleepBedTime.split(':').map(Number);
+                      const [wh, wm] = sleepWakeTime.split(':').map(Number);
+                      let mins = (wh * 60 + wm) - (bh * 60 + bm);
+                      if (mins < 0) mins += 24 * 60;
+                      const hrs = Math.floor(mins / 60);
+                      const m = mins % 60;
+                      return `${hrs}h ${m}m sleep duration`;
+                    } catch {
+                      return '';
+                    }
+                  })()}
+                </Text>
+              </View>
+            )}
+
+            <TextInput
+              value={sleepNotes}
+              onChangeText={setSleepNotes}
+              placeholder="Sleep notes (e.g. woke up during night)..."
+              placeholderTextColor="var(--color-text-muted)"
+              multiline
+              className="bg-background rounded-lg px-3 py-2 text-text-primary text-sm"
+              style={{ minHeight: 50, textAlignVertical: 'top' }}
+            />
+          </View>
         </FormSection>
 
         {/* Medication Adherence Summary */}

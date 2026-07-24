@@ -13,7 +13,7 @@ import Button from '../components/ui/Button';
 import { useActiveWorkoutBarPadding } from '../components/ActiveWorkoutBar';
 import { useHeaderActionColors } from '../hooks/useHeaderActionColors';
 import { usePreferences } from '../hooks';
-import { fetchNutritionTrends } from '../services/api/reportsApi';
+import { fetchNutritionTrends, fetchReportsData } from '../services/api/reportsApi';
 import { useMedicationEntries } from '../hooks/useMedications';
 import type { RootStackScreenProps } from '../types/navigation';
 import { toLocalDateString, addDays } from '../utils/dateUtils';
@@ -315,6 +315,173 @@ const MedicationReport: React.FC<{
   );
 };
 
+// --- Exercise Report Tab ---------------------------------------------------
+
+const ExerciseReport: React.FC<{
+  startDate: string;
+  endDate: string;
+}> = ({ startDate, endDate }) => {
+  const { data: reportsData, isLoading } = useQuery({
+    queryKey: ['reports-data', startDate, endDate],
+    queryFn: () => fetchReportsData(startDate, endDate),
+  });
+
+  if (isLoading) {
+    return (
+      <View className="py-10 items-center">
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
+  const exercise = reportsData?.exerciseSummary;
+  if (!exercise || exercise.totalSessions === 0) {
+    return (
+      <View className="bg-surface rounded-xl p-6 items-center">
+        <Icon name="barbell" size={40} color="var(--color-text-muted)" />
+        <Text className="text-sm text-text-muted mt-3 text-center">
+          No exercise data for this period.
+        </Text>
+      </View>
+    );
+  }
+
+  return (
+    <View className="gap-4">
+      <View className="flex-row gap-2">
+        <StatCard label="Sessions" value={exercise.totalSessions.toString()} />
+        <StatCard label="Total Minutes" value={exercise.totalMinutes.toString()} sublabel="min" />
+        <StatCard label="Calories" value={Math.round(exercise.totalCalories).toString()} sublabel="kcal" />
+      </View>
+      <View className="flex-row gap-2">
+        <StatCard
+          label="Avg/Day"
+          value={Math.round(exercise.avgMinutesPerDay).toString()}
+          sublabel="min"
+          color="text-accent-primary"
+        />
+      </View>
+      <View className="bg-surface rounded-xl p-4">
+        <Text className="text-sm font-semibold text-text-primary mb-2">Summary</Text>
+        <Text className="text-xs text-text-secondary leading-5">
+          Over this period, you completed {exercise.totalSessions} exercise sessions
+          totaling {exercise.totalMinutes} minutes and burning approximately{' '}
+          {Math.round(exercise.totalCalories)} calories.
+          That's an average of {Math.round(exercise.avgMinutesPerDay)} minutes per day.
+        </Text>
+      </View>
+    </View>
+  );
+};
+
+// --- Measurements Report Tab ------------------------------------------------
+
+const MeasurementsReport: React.FC<{
+  startDate: string;
+  endDate: string;
+}> = ({ startDate, endDate }) => {
+  const { data: reportsData, isLoading } = useQuery({
+    queryKey: ['reports-data', startDate, endDate],
+    queryFn: () => fetchReportsData(startDate, endDate),
+  });
+
+  if (isLoading) {
+    return (
+      <View className="py-10 items-center">
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
+  const trends = reportsData?.measurementTrends ?? [];
+  if (trends.length === 0) {
+    return (
+      <View className="bg-surface rounded-xl p-6 items-center">
+        <Icon name="body" size={40} color="var(--color-text-muted)" />
+        <Text className="text-sm text-text-muted mt-3 text-center">
+          No measurement data for this period.{'\n'}Log measurements from Check-In.
+        </Text>
+      </View>
+    );
+  }
+
+  const weightPoints = trends.filter((t) => t.weight != null);
+  const latestWeight = weightPoints.length > 0 ? weightPoints[weightPoints.length - 1].weight : null;
+  const firstWeight = weightPoints.length > 0 ? weightPoints[0].weight : null;
+  const weightChange = latestWeight && firstWeight ? latestWeight - firstWeight : null;
+
+  const stepsPoints = trends.filter((t) => t.steps != null);
+  const avgSteps = stepsPoints.length > 0
+    ? stepsPoints.reduce((s, t) => s + (t.steps ?? 0), 0) / stepsPoints.length
+    : 0;
+
+  return (
+    <View className="gap-4">
+      {/* Weight Summary */}
+      {weightPoints.length > 0 && (
+        <View className="gap-2">
+          <View className="flex-row gap-2">
+            <StatCard
+              label="Latest Weight"
+              value={latestWeight ? `${latestWeight.toFixed(1)}` : '—'}
+              sublabel="kg"
+            />
+            <StatCard
+              label="Change"
+              value={weightChange ? `${weightChange > 0 ? '+' : ''}${weightChange.toFixed(1)}` : '—'}
+              sublabel="kg"
+              color={weightChange && weightChange > 0 ? 'text-red-500' : 'text-green-500'}
+            />
+          </View>
+          {/* Weight trend bar chart */}
+          <View className="bg-surface rounded-xl p-4">
+            <Text className="text-sm font-semibold text-text-primary mb-3">
+              Weight Trend
+            </Text>
+            <SimpleBarChart
+              data={weightPoints.slice(-14).map((t) => ({
+                label: t.date.substring(5),
+                value: t.weight ?? 0,
+                max: Math.max(...weightPoints.map((w) => w.weight ?? 0), 1),
+              }))}
+              color="#8B5CF6"
+            />
+          </View>
+        </View>
+      )}
+
+      {/* Steps Summary */}
+      {stepsPoints.length > 0 && (
+        <View className="bg-surface rounded-xl p-4">
+          <Text className="text-sm font-semibold text-text-primary mb-2">
+            Daily Steps
+          </Text>
+          <Text className="text-2xl font-bold text-text-primary mb-1">
+            {Math.round(avgSteps).toLocaleString()}
+          </Text>
+          <Text className="text-xs text-text-muted mb-3">average per day</Text>
+          <SimpleBarChart
+            data={stepsPoints.slice(-14).map((t) => ({
+              label: t.date.substring(5),
+              value: t.steps ?? 0,
+              max: Math.max(...stepsPoints.map((s) => s.steps ?? 0), 1),
+            }))}
+            color="#22C55E"
+          />
+        </View>
+      )}
+
+      {/* Data points count */}
+      <View className="bg-surface rounded-xl p-4">
+        <Text className="text-xs text-text-muted">
+          {trends.length} data points in this period.
+          Log more measurements from Check-In for richer trends.
+        </Text>
+      </View>
+    </View>
+  );
+};
+
 // --- Main Screen -----------------------------------------------------------
 
 const ReportsScreen: React.FC<Props> = ({ navigation }) => {
@@ -388,22 +555,8 @@ const ReportsScreen: React.FC<Props> = ({ navigation }) => {
       >
         {activeTab === 'nutrition' && <NutritionReport startDate={startDate} endDate={today} />}
         {activeTab === 'medications' && <MedicationReport startDate={startDate} endDate={today} />}
-        {activeTab === 'exercise' && (
-          <View className="bg-surface rounded-xl p-6 items-center">
-            <Icon name="barbell" size={40} color="var(--color-text-muted)" />
-            <Text className="text-sm text-text-muted mt-3 text-center">
-              Exercise reports coming soon.{'\n'}View exercise history in the Diary tab.
-            </Text>
-          </View>
-        )}
-        {activeTab === 'measurements' && (
-          <View className="bg-surface rounded-xl p-6 items-center">
-            <Icon name="body" size={40} color="var(--color-text-muted)" />
-            <Text className="text-sm text-text-muted mt-3 text-center">
-              Body measurement trends coming soon.{'\n'}Log measurements from the Dashboard.
-            </Text>
-          </View>
-        )}
+        {activeTab === 'exercise' && <ExerciseReport startDate={startDate} endDate={today} />}
+        {activeTab === 'measurements' && <MeasurementsReport startDate={startDate} endDate={today} />}
       </ScrollView>
     </View>
   );

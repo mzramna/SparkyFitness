@@ -75,6 +75,7 @@ import CycleHubScreen from './src/screens/CycleHubScreen';
 import PregnancySetupScreen from './src/screens/PregnancySetupScreen';
 import MedicationsScreen from './src/screens/MedicationsScreen';
 import AddMedicationScreen from './src/screens/AddMedicationScreen';
+import MedicationDetailScreen from './src/screens/MedicationDetailScreen';
 import ReportsScreen from './src/screens/ReportsScreen';
 import CheckInScreen from './src/screens/CheckInScreen';
 import GoalsScreen from './src/screens/GoalsScreen';
@@ -245,6 +246,7 @@ const SafePregnancySetup = withErrorBoundary(PregnancySetupScreen, 'PregnancySet
 
 const SafeMedications = withErrorBoundary(MedicationsScreen, 'Medications', { canGoBack: true });
 const SafeAddMedication = withErrorBoundary(AddMedicationScreen, 'AddMedication', { canGoBack: true });
+const SafeMedicationDetail = withErrorBoundary(MedicationDetailScreen, 'MedicationDetail', { canGoBack: true });
 const SafeReports = withErrorBoundary(ReportsScreen, 'Reports', { canGoBack: true });
 const SafeCheckIn = withErrorBoundary(CheckInScreen, 'CheckIn', { canGoBack: true });
 const SafeGoals = withErrorBoundary(GoalsScreen, 'Goals', { canGoBack: true });
@@ -1223,6 +1225,14 @@ function AppContent() {
           <Stack.Screen
             name="AddMedication"
             component={SafeAddMedication}
+            options={{
+              headerShown: false,
+              gestureEnabled: true,
+            }}
+          />
+          <Stack.Screen
+            name="MedicationDetail"
+            component={SafeMedicationDetail}
             options={{
               headerShown: false,
               gestureEnabled: true,

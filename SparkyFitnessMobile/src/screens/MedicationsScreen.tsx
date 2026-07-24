@@ -140,7 +140,8 @@ const TodayTab: React.FC<{
   loading: boolean;
   onLogDose: (medicationId: string, scheduleId?: string | null, status?: 'taken' | 'skipped' | 'prn_taken') => void;
   onLogGlpInjection: (medicationId: string) => void;
-}> = ({ selectedDate, meds, entries, loading, onLogDose, onLogGlpInjection }) => {
+  navigation?: any;
+}> = ({ selectedDate, meds, entries, loading, onLogDose, onLogGlpInjection, navigation }) => {
   const dueDoses = useMemo(
     () => getDueDosesForDate(meds as MedicationDetail[], selectedDate),
     [meds, selectedDate]
@@ -326,10 +327,10 @@ const TodayTab: React.FC<{
                 </View>
               </View>
               <Pressable
-                onPress={() => onLogGlpInjection(med.id)}
+                onPress={() => navigation.navigate('MedicationDetail', { medicationId: med.id })}
                 className="px-3 py-1.5 rounded-full bg-blue-500/20"
               >
-                <Text className="text-xs font-semibold text-blue-600">Log Injection</Text>
+                <Text className="text-xs font-semibold text-blue-600">GLP-1 Coach</Text>
               </Pressable>
             </View>
           ))}
@@ -398,8 +399,9 @@ const CabinetTab: React.FC<{
   loading: boolean;
   onSelectMed: (id: string) => void;
   onDeleteMed: (id: string) => void;
+  onOpenDetail: (id: string) => void;
   selectedId: string | null;
-}> = ({ meds, loading, onSelectMed, onDeleteMed, selectedId }) => {
+}> = ({ meds, loading, onSelectMed, onDeleteMed, onOpenDetail, selectedId }) => {
   const selected = meds.find((m) => m.id === selectedId) as MedicationDetail | undefined;
 
   if (loading) {
@@ -564,6 +566,17 @@ const CabinetTab: React.FC<{
               ))}
             </View>
           )}
+
+          {/* View Detail button */}
+          <Pressable
+            onPress={() => onOpenDetail(selected.id)}
+            className="mt-2 bg-accent-primary/10 rounded-xl py-3 items-center flex-row justify-center gap-1"
+          >
+            <Icon name="open-outline" size={16} color="var(--color-accent-primary)" />
+            <Text className="text-sm font-semibold text-accent-primary">
+              {selected.is_glp1 ? 'GLP-1 Coach' : 'View Details'}
+            </Text>
+          </Pressable>
         </View>
       )}
     </View>
@@ -815,6 +828,7 @@ const MedicationsScreen: React.FC<Props> = ({ navigation }) => {
             loading={loadingMeds || loadingEntries}
             onLogDose={handleLogDose}
             onLogGlpInjection={handleLogGlpInjection}
+            navigation={navigation}
           />
         )}
         {activeTab === 'cabinet' && (
@@ -823,6 +837,7 @@ const MedicationsScreen: React.FC<Props> = ({ navigation }) => {
             loading={loadingMeds}
             onSelectMed={setSelectedCabinetId}
             onDeleteMed={handleDeleteMed}
+            onOpenDetail={(id) => navigation.navigate('MedicationDetail', { medicationId: id })}
             selectedId={selectedCabinetId}
           />
         )}

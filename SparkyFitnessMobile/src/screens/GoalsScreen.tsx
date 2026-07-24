@@ -76,6 +76,85 @@ const GoalInputRow: React.FC<{
   </View>
 );
 
+// --- Goal Presets Section ---------------------------------------------------
+
+const PRESET_GOALS = [
+  {
+    name: 'Balanced',
+    description: 'Standard balanced diet (40/30/30)',
+    icon: 'nutrition',
+    calories: 2000, protein: 150, carbs: 200, fat: 67,
+    dietary_fiber: 25, water_goal_ml: 2500,
+  },
+  {
+    name: 'High Protein',
+    description: 'Muscle building focus (30/40/30)',
+    icon: 'barbell',
+    calories: 2200, protein: 165, carbs: 220, fat: 73,
+    dietary_fiber: 30, water_goal_ml: 3000,
+  },
+  {
+    name: 'Low Carb',
+    description: 'Keto-friendly (25/5/70)',
+    icon: 'flame',
+    calories: 1800, protein: 112, carbs: 22, fat: 140,
+    dietary_fiber: 20, water_goal_ml: 2500,
+  },
+  {
+    name: 'Weight Loss',
+    description: 'Moderate deficit (35/40/25)',
+    icon: 'trending-down',
+    calories: 1600, protein: 140, carbs: 160, fat: 44,
+    dietary_fiber: 28, water_goal_ml: 2800,
+  },
+];
+
+const GoalPresetsSection: React.FC<{
+  onApplyPreset: (preset: Record<string, number>) => void;
+}> = ({ onApplyPreset }) => {
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <View className="bg-surface rounded-xl p-4 mb-4">
+      <Pressable
+        onPress={() => setExpanded(!expanded)}
+        className="flex-row items-center justify-between"
+      >
+        <View className="flex-row items-center gap-2">
+          <Icon name="sparkles" size={18} color="var(--color-accent-primary)" />
+          <Text className="text-sm font-semibold text-text-primary">Quick Presets</Text>
+        </View>
+        <Icon
+          name={expanded ? 'chevron-up' : 'chevron-down'}
+          size={16}
+          color="var(--color-text-muted)"
+        />
+      </Pressable>
+      {expanded && (
+        <View className="mt-3 gap-2">
+          {PRESET_GOALS.map((preset) => (
+            <Pressable
+              key={preset.name}
+              onPress={() => onApplyPreset(preset)}
+              className="bg-background rounded-xl p-3 flex-row items-center gap-3"
+              style={({ pressed }) => (pressed ? { opacity: 0.7 } : null)}
+            >
+              <View className="w-10 h-10 rounded-full bg-accent-primary/10 items-center justify-center">
+                <Icon name={preset.icon} size={20} color="var(--color-accent-primary)" />
+              </View>
+              <View className="flex-1">
+                <Text className="text-sm font-semibold text-text-primary">{preset.name}</Text>
+                <Text className="text-[10px] text-text-muted">{preset.description}</Text>
+              </View>
+              <Text className="text-xs text-text-muted">{preset.calories} kcal</Text>
+            </Pressable>
+          ))}
+        </View>
+      )}
+    </View>
+  );
+};
+
 // --- Main Screen -----------------------------------------------------------
 
 const GoalsScreen: React.FC<Props> = ({ navigation }) => {
@@ -280,6 +359,19 @@ const GoalsScreen: React.FC<Props> = ({ navigation }) => {
             </View>
           </View>
         )}
+
+        {/* Goal Presets */}
+        <GoalPresetsSection onApplyPreset={(preset) => {
+          // Apply preset values to edit values
+          const newValues: Record<string, string> = {};
+          for (const [key, val] of Object.entries(preset)) {
+            if (typeof val === 'number' && GOAL_FIELDS.some(f => f.key === key)) {
+              newValues[key] = String(val);
+            }
+          }
+          setEditValues(newValues);
+          setIsEditing(true);
+        }} />
 
         {/* Goal Fields by Group */}
         {groups.map(([groupName, fields]) => (
